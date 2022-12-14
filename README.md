@@ -17,4 +17,8 @@ Service will be available on http://0.0.0.0:8001/ by default. To test API you ca
 #### Start server manually
 Install Tesseract and all dependencies from requirements.txt, then run the server.
 
+`brew install tesseract`
+
+`pip install requirements.txt`
+
 `uvicorn main:app --host 0.0.0.0 --port 8001`

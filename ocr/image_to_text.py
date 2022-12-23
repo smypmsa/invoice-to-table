@@ -1,6 +1,8 @@
-import cv2
-import pytesseract
 import re
+
+import cv2
+import numpy as np
+import pytesseract
 
 from config import IMAGE_PREPROCESSING, REGEXP_INV_NUMBER, REGEXP_INV_DATE
 
@@ -22,14 +24,14 @@ def do_thresholding(image):
 
 # Combination of preprocessing steps
 def do_combined_preprocessing(image):
-        disnoised_img = remove_noise(image)
-        grayed_img = get_grayscale(disnoised_img)
-        threshed_img = do_thresholding(grayed_img)
+    disnoised_img = remove_noise(image)
+    grayed_img = get_grayscale(disnoised_img)
+    threshed_img = do_thresholding(grayed_img)
 
-        return threshed_img
+    return threshed_img
 
 
-def process_invoice(filename: str, file_path: str):
+def do_image_ocr(filename: str, file_bytes: str):
     """
     Process an invoice image with the help of Tesseract OCR and
     returns its number and date.
@@ -41,13 +43,14 @@ def process_invoice(filename: str, file_path: str):
     inv_data (dict): An invoice file name, invoice number and date
     """
 
-    img = cv2.imread(file_path)
+    img_array = np.fromstring(file_bytes, dtype='uint8')
+    img = cv2.imdecode(img_array, cv2.IMREAD_UNCHANGED)
 
     # Crop image (client's invoices have a standard format,
     # so we can crop unnecessary part)
 
-    cropped_height = int(img.shape[0] * 1/5)
-    cropped_width = int(img.shape[1] * 2/3)
+    cropped_height = int(img.shape[0] * 1 / 5)
+    cropped_width = int(img.shape[1] * 2 / 3)
     cropped_img = img[:cropped_height, cropped_width:]
 
     if IMAGE_PREPROCESSING:
